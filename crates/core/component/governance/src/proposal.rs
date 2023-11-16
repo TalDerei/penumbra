@@ -1,5 +1,6 @@
 use anyhow::Context;
 use bytes::Bytes;
+use ibc_types::core::connection::ConnectionEnd;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
@@ -70,6 +71,12 @@ impl From<Proposal> for pb::Proposal {
             ProposalPayload::UpgradePlan { height } => {
                 proposal.upgrade_plan = Some(pb::proposal::UpgradePlan { height });
             }
+            ProposalPayload::UnplannedIbcUpgrade {
+                connection_id,
+                new_config,
+            } => todo!(),
+            ProposalPayload::FreezeIbcClient { client_id } => todo!(),
+            ProposalPayload::UnfreezeIbcClient { client_id } => todo!(),
         }
         proposal
     }
@@ -193,6 +200,15 @@ pub enum ProposalKind {
     /// An upgrade proposal.
     #[cfg_attr(feature = "clap", clap(display_order = 500))]
     UpgradePlan,
+    /// An unplanned IBC connection modification.
+    #[cfg_attr(feature = "clap", clap(display_order = 600))]
+    UnplannedIbcUpgrade,
+    /// A proposal to freeze an IBC client.
+    #[cfg_attr(feature = "clap", clap(display_order = 610))]
+    FreezeIbcClient,
+    /// A proposal to unfreeze an IBC client.
+    #[cfg_attr(feature = "clap", clap(display_order = 611))]
+    UnfreezeIbcClient,
 }
 
 impl FromStr for ProposalKind {
@@ -219,6 +235,9 @@ impl Proposal {
             ProposalPayload::ParameterChange { .. } => ProposalKind::ParameterChange,
             ProposalPayload::DaoSpend { .. } => ProposalKind::DaoSpend,
             ProposalPayload::UpgradePlan { .. } => ProposalKind::UpgradePlan,
+            ProposalPayload::UnplannedIbcUpgrade { .. } => ProposalKind::UnplannedIbcUpgrade,
+            ProposalPayload::FreezeIbcClient { .. } => ProposalKind::FreezeIbcClient,
+            ProposalPayload::UnfreezeIbcClient { .. } => ProposalKind::UnfreezeIbcClient,
         }
     }
 }
@@ -267,6 +286,24 @@ pub enum ProposalPayload {
     /// An upgrade plan proposal describes a planned upgrade to the chain. If ratified, the chain
     /// will halt at the specified height, trigger an epoch transition, and halt the chain.
     UpgradePlan { height: u64 },
+    /// Proposes to update the configuration for an existing IBC connection. This should only be used
+    /// for unplanned upgrades, as the IBC protocol has an existing update mechanism.
+    UnplannedIbcUpgrade {
+        /// The connection ID to be upgraded.
+        connection_id: String,
+        /// The new configuration for the connection.
+        new_config: ConnectionEnd,
+    },
+    /// Freezes an existing IBC client.
+    FreezeIbcClient {
+        /// The client ID to be frozen.
+        client_id: String,
+    },
+    // Unfreezes an existing IBC client.
+    UnfreezeIbcClient {
+        /// The client ID to be unfrozen.
+        client_id: String,
+    },
 }
 
 /// A TOML-serializable version of `ProposalPayload`, meant for human consumption.
@@ -332,6 +369,12 @@ impl From<ProposalPayload> for ProposalPayloadToml {
                 ),
             },
             ProposalPayload::UpgradePlan { height } => ProposalPayloadToml::UpgradePlan { height },
+            ProposalPayload::UnplannedIbcUpgrade {
+                connection_id,
+                new_config,
+            } => todo!(),
+            ProposalPayload::FreezeIbcClient { client_id } => todo!(),
+            ProposalPayload::UnfreezeIbcClient { client_id } => todo!(),
         }
     }
 }
