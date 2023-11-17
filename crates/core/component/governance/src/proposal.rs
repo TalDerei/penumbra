@@ -74,9 +74,22 @@ impl From<Proposal> for pb::Proposal {
             ProposalPayload::UnplannedIbcUpgrade {
                 connection_id,
                 new_config,
-            } => todo!(),
-            ProposalPayload::FreezeIbcClient { client_id } => todo!(),
-            ProposalPayload::UnfreezeIbcClient { client_id } => todo!(),
+            } => {
+                proposal.unplanned_ibc_upgrade = Some(pb::proposal::UnplannedIbcUpgrade {
+                    connection_id,
+                    new_config: Some(new_config.into()),
+                });
+            }
+            ProposalPayload::FreezeIbcClient { client_id } => {
+                proposal.freeze_ibc_client = Some(pb::proposal::FreezeIbcClient {
+                    client_id: client_id.into(),
+                });
+            }
+            ProposalPayload::UnfreezeIbcClient { client_id } => {
+                proposal.unfreeze_ibc_client = Some(pb::proposal::UnfreezeIbcClient {
+                    client_id: client_id.into(),
+                });
+            }
         }
         proposal
     }
@@ -326,6 +339,16 @@ pub enum ProposalPayloadToml {
     UpgradePlan {
         height: u64,
     },
+    UnplannedIbcUpgrade {
+        connection_id: String,
+        new_config: ConnectionEnd,
+    },
+    FreezeIbcClient {
+        client_id: String,
+    },
+    UnfreezeIbcClient {
+        client_id: String,
+    },
 }
 
 impl TryFrom<ProposalPayloadToml> for ProposalPayload {
@@ -348,6 +371,19 @@ impl TryFrom<ProposalPayloadToml> for ProposalPayload {
                 .to_vec(),
             },
             ProposalPayloadToml::UpgradePlan { height } => ProposalPayload::UpgradePlan { height },
+            ProposalPayloadToml::UnplannedIbcUpgrade {
+                connection_id,
+                new_config,
+            } => ProposalPayload::UnplannedIbcUpgrade {
+                connection_id,
+                new_config,
+            },
+            ProposalPayloadToml::FreezeIbcClient { client_id } => {
+                ProposalPayload::FreezeIbcClient { client_id }
+            }
+            ProposalPayloadToml::UnfreezeIbcClient { client_id } => {
+                ProposalPayload::UnfreezeIbcClient { client_id }
+            }
         })
     }
 }
@@ -372,9 +408,16 @@ impl From<ProposalPayload> for ProposalPayloadToml {
             ProposalPayload::UnplannedIbcUpgrade {
                 connection_id,
                 new_config,
-            } => todo!(),
-            ProposalPayload::FreezeIbcClient { client_id } => todo!(),
-            ProposalPayload::UnfreezeIbcClient { client_id } => todo!(),
+            } => ProposalPayloadToml::UnplannedIbcUpgrade {
+                connection_id,
+                new_config,
+            },
+            ProposalPayload::FreezeIbcClient { client_id } => {
+                ProposalPayloadToml::FreezeIbcClient { client_id }
+            }
+            ProposalPayload::UnfreezeIbcClient { client_id } => {
+                ProposalPayloadToml::UnfreezeIbcClient { client_id }
+            }
         }
     }
 }
