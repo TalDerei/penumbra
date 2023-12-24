@@ -7,40 +7,38 @@ on:
       - main
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  wasm:
+    name: Build WASM
+    runs-on: buildjet-16vcpu-ubuntu-2004
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            lfs: true
+        - name: Install rust toolchain
+          uses: dtolnay/rust-toolchain@stable
+          with:
+            targets: wasm32-unknown-unknown
 
-  name: Build WASM
-  runs-on: buildjet-16vcpu-ubuntu-2004
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-      - name: Install rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
+        - name: Load rust cache
+          uses: astriaorg/buildjet-rust-cache@v2.5.1
 
-      - name: Load rust cache
-        uses: astriaorg/buildjet-rust-cache@v2.5.1
+      # steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v2
 
-    # steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+        # Download prebuilt binary for wasm-pack; faster than `cargo install`.
+        # - uses: jetli/wasm-pack-action@v0.4.0
+        #   with:
+        #     version: 'latest'
 
-      # Download prebuilt binary for wasm-pack; faster than `cargo install`.
-      # - uses: jetli/wasm-pack-action@v0.4.0
-      #   with:
-      #     version: 'latest'
+        # Download wasm-pack explicitly
+        - name: Install wasm-pack
+          run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      # Download wasm-pack explicitly
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        # Download firefox
+        - uses: browser-actions/setup-firefox@v1
+        - run: firefox --version
 
-      # Download firefox
-      - uses: browser-actions/setup-firefox@v1
-      - run: firefox --version
-
-      - name: Run wasm unit-test
-        run: wasm-pack test --headless --firefox -- --test test_build --target wasm32-unknown-unknown --release --features "mock-database"
-        working-directory: crates/wasm
+        - name: Run wasm unit-test
+          run: wasm-pack test --headless --firefox -- --test test_build --target wasm32-unknown-unknown --release --features "mock-database"
+          working-directory: crates/wasm
