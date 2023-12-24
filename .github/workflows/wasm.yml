@@ -9,30 +9,31 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            lfs: true
-        - name: Install rust toolchain
-          uses: dtolnay/rust-toolchain@stable
-          with:
-            targets: wasm32-unknown-unknown
 
-        - name: Load rust cache
-          uses: astriaorg/buildjet-rust-cache@v2.5.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
 
-      # steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v2
+      - name: Load rust cache
+        uses: astriaorg/buildjet-rust-cache@v2.5.1
 
-        # Download wasm-pack explicitly
-        - name: Install wasm-pack
-          run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+    # steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-        # Download firefox
-        - uses: browser-actions/setup-firefox@v1
-        - run: firefox --version
+      # Download wasm-pack explicitly
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-        - name: Run wasm unit-test
-          run: wasm-pack test --headless --firefox -- --test test_build --target wasm32-unknown-unknown --release --features "mock-database"
-          working-directory: crates/wasm
+      # Download firefox
+      - uses: browser-actions/setup-firefox@v1
+      - run: firefox --version
+
+      - name: Run wasm unit-test
+        run: wasm-pack test --headless --firefox -- --test test_build --target wasm32-unknown-unknown --release --features "mock-database"
+        working-directory: crates/wasm
