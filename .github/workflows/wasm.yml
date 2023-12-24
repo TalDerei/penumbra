@@ -10,9 +10,23 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+  name: Build WASM
+  runs-on: buildjet-16vcpu-ubuntu-2004
     steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Load rust cache
+        uses: astriaorg/buildjet-rust-cache@v2.5.1
+
+    # steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       # Download prebuilt binary for wasm-pack; faster than `cargo install`.
       # - uses: jetli/wasm-pack-action@v0.4.0
