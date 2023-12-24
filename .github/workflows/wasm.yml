@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: buildjet-16vcpu-ubuntu-2004
+    runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
           with:
@@ -24,11 +24,6 @@ jobs:
       # steps:
         - name: Checkout Repository
           uses: actions/checkout@v2
-
-        # Download prebuilt binary for wasm-pack; faster than `cargo install`.
-        # - uses: jetli/wasm-pack-action@v0.4.0
-        #   with:
-        #     version: 'latest'
 
         # Download wasm-pack explicitly
         - name: Install wasm-pack
