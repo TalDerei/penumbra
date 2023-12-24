@@ -1,13 +1,10 @@
 name: Wasm CI
 
 on: pull_request
-  # push:
-  #   branches:
-  #     - main
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: buildjet-16vcpu-ubuntu-2004
 
     steps:
       - uses: actions/checkout@v2
