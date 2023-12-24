@@ -20,7 +20,7 @@ jobs:
           version: 'latest'
 
       # Download wasm-pack explicitly
-      - name: Install
+      - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       # Download firefox
