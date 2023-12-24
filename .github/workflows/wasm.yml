@@ -28,5 +28,5 @@ jobs:
       - run: firefox --version
 
       - name: Run wasm unit-test
-        run: wasm-pack test --headless --firefox -- --test test_build --target wasm32-unknown-unknown --release --features "mock-database"
+        run: wasm-pack test --headless --chrome -- --test test_build --target wasm32-unknown-unknown --release --features "mock-database"
         working-directory: crates/wasm
