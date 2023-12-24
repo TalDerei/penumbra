@@ -1,17 +1,16 @@
 name: Wasm CI
 
-on:
-  pull_request:
-  push:
-    branches:
-      - main
+on: pull_request
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
         with:
           lfs: true
       - name: Install rust toolchain
@@ -21,10 +20,6 @@ jobs:
 
       - name: Load rust cache
         uses: astriaorg/buildjet-rust-cache@v2.5.1
-
-    # steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
 
       # Download wasm-pack explicitly
       - name: Install wasm-pack
